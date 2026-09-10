@@ -25,6 +25,7 @@ st.write(
 # --------------------------------------------------
 DATA_URL = "https://raw.githubusercontent.com/greatsong/modudata/main/data/kobis_daily.csv"
 
+
 @st.cache_data
 def load_data():
     df = pd.read_csv(DATA_URL)
@@ -127,11 +128,12 @@ st.plotly_chart(
 )
 
 
-# 그래프 설명 자리
+# 그래프 설명 작성 공간
 st.markdown("**이 그래프로 알 수 있는 것**")
-st.text_input(
-    "그래프에서 알 수 있는 내용을 입력하세요.",
-    placeholder="영화의 날짜별 일관객 변화를 통해 개봉 후 관객수가 언제 가장 많았고, 시간이 지나면서 관객수가 어떻게 변했는지 알 수 있다."
+
+st.text_area(
+    "직접 작성하세요.",
+    placeholder="날짜에 따라 영화의 일관객수가 어떻게 변하는지 알 수 있고, 관객수가 가장 많거나 적었던 시점과 전체적인 변화 추세를 확인할 수 있다.",
     key="graph1_description"
 )
 
