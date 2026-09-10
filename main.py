@@ -131,7 +131,8 @@ st.plotly_chart(
 st.markdown("**이 그래프로 알 수 있는 것**")
 st.text_input(
     "그래프에서 알 수 있는 내용을 입력하세요.",
-    placeholder="예: 개봉 직후 관객수가 높고 시간이 지나면서 감소하는 경향을 볼 수 있다.",
+    placeholder="영화의 날짜별 일관객 변화를 통해 개봉 후 관객수가 언제 가장 많았고, 시간이 지나면서 관객수가 어떻게 변했는지 알 수 있다.
+",
     key="graph1_description"
 )
 
