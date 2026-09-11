@@ -322,3 +322,75 @@ st.plotly_chart(
 
 st.markdown("**이 그래프로 알 수 있는 것**")
 st.write("이 기간 동안 일관객 합계가 가장 많았던 영화 TOP 10을 비교할 수 있고, 각 영화가 개봉 후 10위권에 든 날수도 확인할 수 있다.")
+
+st.divider()
+st.header("그래프 5. 월 × 요일별 일관객 합계")
+st.write("날짜에서 월과 요일을 뽑아 월별·요일별 일관객 합계를 히트맵으로 확인합니다.")
+
+# 월과 요일 추출
+df["월"] = df["날짜"].dt.month
+
+weekday_order = [
+    "월요일",
+    "화요일",
+    "수요일",
+    "목요일",
+    "금요일",
+    "토요일",
+    "일요일"
+]
+
+df["요일"] = df["날짜"].dt.dayofweek.map(
+    dict(enumerate(weekday_order))
+)
+
+# 월 × 요일별 일관객 합계
+heatmap_data = (
+    df.groupby(["월", "요일"])["일관객"]
+    .sum()
+    .reset_index()
+)
+
+# 피벗 테이블 생성
+heatmap_pivot = heatmap_data.pivot(
+    index="월",
+    columns="요일",
+    values="일관객"
+)
+
+# 월 순서 1~12월, 요일 순서 월~일
+heatmap_pivot = heatmap_pivot.reindex(
+    index=range(1, 13),
+    columns=weekday_order
+)
+
+fig5 = px.imshow(
+    heatmap_pivot,
+    labels={
+        "x": "요일",
+        "y": "월",
+        "color": "일관객 합계"
+    },
+    x=weekday_order,
+    y=[f"{month}월" for month in range(1, 13)],
+    aspect="auto",
+    title="월 × 요일별 일관객 합계",
+    text_auto=".0f"
+)
+
+fig5.update_traces(
+    hovertemplate="월: %{y}<br>요일: %{x}<br>일관객 합계: %{z:,.0f}명<extra></extra>"
+)
+
+fig5.update_layout(
+    xaxis_title="요일",
+    yaxis_title="월"
+)
+
+st.plotly_chart(
+    fig5,
+    use_container_width=True
+)
+
+st.markdown("**이 그래프로 알 수 있는 것**")
+st.write("월과 요일에 따라 10위권 영화의 일관객 합계가 어떻게 달라지는지 확인할 수 있고, 색이 진한 부분에서 관객이 많이 몰렸음을 알 수 있다.")
