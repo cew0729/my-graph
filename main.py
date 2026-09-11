@@ -260,14 +260,25 @@ st.divider()
 st.header("그래프 4. 영화별 일관객 합계 TOP 10")
 st.write("이 기간 동안 영화별 일관객을 모두 더해 관객수가 많은 영화 TOP 10을 확인합니다.")
 
-# 영화별 일관객 합계 계산
+# 영화별 일관객 합계
 movie_total = (
-    df.groupby("영화명")
-    .agg(
-        일관객_합계=("일관객", "sum"),
-        10위권_등장일수=("날짜", "nunique")
-    )
+    df.groupby("영화명", as_index=False)["일관객"]
+    .sum()
+    .rename(columns={"일관객": "일관객_합계"})
+)
+
+# 영화별 10위권 등장 일수
+movie_days = (
+    df.groupby("영화명")["날짜"]
+    .nunique()
     .reset_index()
+    .rename(columns={"날짜": "10위권_등장일수"})
+)
+
+# 두 데이터 합치기
+movie_total = movie_total.merge(
+    movie_days,
+    on="영화명"
 )
 
 # 일관객 합계가 가장 큰 TOP 10
@@ -295,16 +306,13 @@ fig4 = px.bar(
 )
 
 fig4.update_traces(
-    hovertemplate="영화: %{y}<br>일관객 합계: %{x:,.0f}명<br>개봉 후 10위권에 든 날수: %{customdata[0]:,}일<extra></extra>",
-    customdata=top10_movies[["10위권_등장일수"]]
+    customdata=top10_movies[["10위권_등장일수"]],
+    hovertemplate="영화: %{y}<br>일관객 합계: %{x:,.0f}명<br>개봉 후 10위권에 든 날수: %{customdata[0]:,}일<extra></extra>"
 )
 
 fig4.update_layout(
     xaxis_title="일관객 합계",
-    yaxis_title="영화",
-    yaxis=dict(
-        categoryorder="total ascending"
-    )
+    yaxis_title="영화"
 )
 
 st.plotly_chart(
